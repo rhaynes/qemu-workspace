@@ -13,14 +13,27 @@ isolating agents.
 
 ```
 ./install-qemu.sh # Installs using homebrew
-./create-vm.sh    # interactive; prompts for workspace
-./start-vm.sh    <workspace>
-./ssh-vm.sh      <workspace> [remote-command...]
-./clone-vm.sh    <source-workspace> [dest-workspace]
-./thin-clone.sh  <source-workspace> [dest-workspace]
+./create-vm.sh    # interactive
 ```
 
-Use `./ssh-vm.sh` to access on first boot then run:
+After the vm's folder has been created
+
+```
+./start-vm.sh    <vm-folder>
+```
+
+(Optional) If you want multiple vm's based on the same image:
+```
+./clone-vm.sh    <source-folder> [dest-folder]
+./thin-clone.sh  <source-folder> [dest-folder]
+```
+
+The login prompt for ubuntu at the command line should appear.
+At that point this will get you in.
+
+```
+./ssh-vm.sh      <vm-folder> [remote-command...]
+```
 
 ```
 sudo passwd ubuntu
