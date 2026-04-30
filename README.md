@@ -1,4 +1,5 @@
 # qemu-workspace
+
 Setup and management scripts for ubuntu running via qemu on mac
 
 ## What is this
@@ -23,12 +24,14 @@ After the vm's folder has been created
 ```
 
 (Optional) If you want multiple vm's based on the same image:
+
 ```
 ./clone-vm.sh    <source-folder> [dest-folder]
 ./thin-clone.sh  <source-folder> [dest-folder]
 ```
 
 (Optional) Change the hostname if you've cloned to make it easier to keep track of things:
+
 ```
 ./rename-vm.sh vms/clone clone
 ```
@@ -50,6 +53,7 @@ sudo reboot
 ```
 
 Quick install for vscode:
+
 ```
 sudo apt install -y wget gpg
 wget -qO- https://packages.microsoft.com/keys/microsoft.asc \
@@ -61,6 +65,7 @@ sudo apt install -y code
 ```
 
 Recommended vscode settings:
+
 ```
 {
   "telemetry.telemetryLevel": "off",
@@ -75,10 +80,16 @@ Recommended vscode settings:
 }
 ```
 
+## Sharing files
+
+All sharing between the host and the vm happens through `vms/${vm-name}/shared` on the host side and `/mnt/shared` on the vm side.
+
 ## Next steps
+
 Follow the general instructions for setting up a linux box from the main readme (install node, etc).
 
 ### For claude code
+
 ```
 curl -fsSL https://claude.ai/install.sh | bash
 claude --version
