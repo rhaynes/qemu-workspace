@@ -127,15 +127,30 @@ while true; do
     echo "  Get a cloud image from: $DEFAULT_IMG_URL" >&2
 done
 
-# 2. Workspace -- one directory that will hold vm/ and shared/ subdirs.
+# 2. VM name + parent directory -- workspace = <vms_dir>/<vm_name>, holding
+#    vm/ and shared/ subdirs.
 echo
 echo "Workspace directory will hold:"
 echo "  <workspace>/vm/      -- disk image, EFI vars, SSH key, seed ISO"
 echo "  <workspace>/shared/  -- host<->guest bridge (mounted at /mnt/shared)"
 echo "Created if it does not exist."
 echo
-workspace=$(prompt "Workspace directory" "$SCRIPT_DIR")
-workspace=$(expand_path "$workspace")
+while true; do
+    vm_name=$(prompt "VM name")
+    if [ -z "$vm_name" ]; then
+        echo "  VM name is required." >&2
+        continue
+    fi
+    case "$vm_name" in
+        */*|.|..) echo "  VM name must not contain '/' or be '.'/'..'." >&2; continue ;;
+    esac
+    break
+done
+
+vms_dir=$(prompt "VMs directory" "$SCRIPT_DIR/vms")
+vms_dir=$(expand_path "$vms_dir")
+
+workspace="$vms_dir/$vm_name"
 
 VM_DIR="$workspace/vm"
 SHARED_DIR="$workspace/shared"
