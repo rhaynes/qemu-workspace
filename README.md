@@ -65,3 +65,5 @@ Follow the general instructions for setting up a linux box from the main readme 
 curl -fsSL https://claude.ai/install.sh | bash
 claude --version
 ```
+
+Install the vscode extension for Claude and log in.
