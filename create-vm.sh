@@ -141,9 +141,13 @@ while true; do
         echo "  VM name is required." >&2
         continue
     fi
-    case "$vm_name" in
-        */*|.|..) echo "  VM name must not contain '/' or be '.'/'..'." >&2; continue ;;
-    esac
+    # Also used as the guest hostname and cloud-init instance-id, so enforce
+    # RFC 1123 hostname rules: 1-63 chars, letters/digits/hyphens, no leading
+    # or trailing hyphen.
+    if ! [[ "$vm_name" =~ ^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?$ ]]; then
+        echo "  VM name must be 1-63 chars: letters, digits, hyphens (no leading/trailing hyphen)." >&2
+        continue
+    fi
     break
 done
 
@@ -206,8 +210,13 @@ ssh-keygen -t ed25519 -f "$SSH_KEY" -N "" -C "qemu-ubuntu-agent" >/dev/null
 echo "Building cloud-init seed ISO..."
 PUBKEY=$(cat "${SSH_KEY}.pub")
 PUBKEY_ESCAPED=$(printf '%s' "$PUBKEY" | sed -e 's/[&/\]/\\&/g')
-sed "s|__SSH_PUBKEY__|${PUBKEY_ESCAPED}|" cloud-init/user-data.tmpl > "$SEED_DIR/user-data"
-cp cloud-init/meta-data "$SEED_DIR/meta-data"
+# vm_name is hostname-validated above (alnum + hyphen only), so no sed-escaping needed.
+sed -e "s|__SSH_PUBKEY__|${PUBKEY_ESCAPED}|" \
+    -e "s|__HOSTNAME__|${vm_name}|g" \
+    cloud-init/user-data.tmpl > "$SEED_DIR/user-data"
+sed -e "s|__INSTANCE_ID__|${vm_name}|" \
+    -e "s|__HOSTNAME__|${vm_name}|" \
+    cloud-init/meta-data.tmpl > "$SEED_DIR/meta-data"
 
 SEED_ISO="$VM_DIR/seed.iso"
 rm -f "$SEED_ISO"

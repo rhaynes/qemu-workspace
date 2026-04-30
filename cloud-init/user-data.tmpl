@@ -1,0 +1,40 @@
+#cloud-config
+hostname: __HOSTNAME__
+
+users:
+  - name: ubuntu
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    lock_passwd: true
+    ssh_authorized_keys:
+      - __SSH_PUBKEY__
+
+ssh_pwauth: false
+disable_root: true
+
+package_update: true
+package_upgrade: false
+packages:
+  - qemu-guest-agent
+  - 9mount
+
+write_files:
+  - path: /etc/modules-load.d/9p.conf
+    content: |
+      9p
+      9pnet
+      9pnet_virtio
+  - path: /etc/fstab
+    append: true
+    content: |
+      hostshare /mnt/shared 9p trans=virtio,version=9p2000.L,rw,_netdev,nofail,msize=104857600 0 0
+
+runcmd:
+  - mkdir -p /mnt/shared
+  - modprobe 9p || true
+  - modprobe 9pnet_virtio || true
+  - mount -a || true
+  - chown ubuntu:ubuntu /mnt/shared
+  - systemctl enable --now qemu-guest-agent || true
+
+final_message: "cloud-init finished after $UPTIME seconds. VM is ready."
