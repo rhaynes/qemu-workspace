@@ -156,6 +156,12 @@ vms_dir=$(expand_path "$vms_dir")
 
 workspace="$vms_dir/$vm_name"
 
+if [ -e "$workspace" ]; then
+    echo "Workspace already exists: $workspace" >&2
+    echo "Pick a different VM name or remove the directory and retry." >&2
+    exit 1
+fi
+
 VM_DIR="$workspace/vm"
 SHARED_DIR="$workspace/shared"
 SEED_DIR="$VM_DIR/seed"
@@ -182,19 +188,6 @@ echo
 if ! confirm "Continue?"; then
     echo "Aborted. Nothing changed." >&2
     exit 1
-fi
-
-# ---- guard against clobbering an existing VM at this location -------------
-
-if [ -f "$VM_DIR/disk.qcow2" ]; then
-    echo
-    echo "An existing VM was found at $VM_DIR/disk.qcow2."
-    if confirm "Delete $VM_DIR and start fresh?"; then
-        rm -rf "$VM_DIR"
-    else
-        echo "Aborted. Nothing changed." >&2
-        exit 1
-    fi
 fi
 
 mkdir -p "$VM_DIR" "$SEED_DIR" "$SHARED_DIR"
