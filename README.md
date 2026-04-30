@@ -28,6 +28,11 @@ After the vm's folder has been created
 ./thin-clone.sh  <source-folder> [dest-folder]
 ```
 
+(Optional) Change the hostname if you've cloned to make it easier to keep track of things:
+```
+./rename-vm.sh vms/clone clone
+```
+
 The login prompt for ubuntu at the command line should appear.
 At that point this will get you in.
 
