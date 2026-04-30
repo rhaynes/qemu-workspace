@@ -86,8 +86,6 @@ All sharing between the host and the vm happens through `vms/${vm-name}/shared` 
 
 ## Next steps
 
-Follow the general instructions for setting up a linux box from the main readme (install node, etc).
-
 ### For claude code
 
 ```
