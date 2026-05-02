@@ -43,6 +43,19 @@ At that point this will get you in.
 ./ssh-vm.sh      <vm-folder> [remote-command...]
 ```
 
+(Optional) Forward a TCP port between the host and the guest:
+
+```
+# Reach a server running in the VM from the host
+./forward-port-vm.sh <vm-folder> port=8080
+
+# Map different ports on each side
+./forward-port-vm.sh <vm-folder> on-host=8080 on-guest=80
+
+# Let the VM reach a server running on the host
+./forward-port-vm.sh <vm-folder> port=5432 server-on=host
+```
+
 ```
 sudo passwd ubuntu
 sudo apt update
