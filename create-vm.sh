@@ -203,9 +203,14 @@ ssh-keygen -t ed25519 -f "$SSH_KEY" -N "" -C "qemu-ubuntu-agent" >/dev/null
 echo "Building cloud-init seed ISO..."
 PUBKEY=$(cat "${SSH_KEY}.pub")
 PUBKEY_ESCAPED=$(printf '%s' "$PUBKEY" | sed -e 's/[&/\]/\\&/g')
+# Inherit host timezone (macOS: /etc/localtime -> .../zoneinfo/<IANA>). Falls
+# back to UTC if the symlink is missing or unparseable.
+HOST_TZ=$(readlink /etc/localtime 2>/dev/null | sed -n 's|.*/zoneinfo/||p')
+HOST_TZ="${HOST_TZ:-UTC}"
 # vm_name is hostname-validated above (alnum + hyphen only), so no sed-escaping needed.
 sed -e "s|__SSH_PUBKEY__|${PUBKEY_ESCAPED}|" \
     -e "s|__HOSTNAME__|${vm_name}|g" \
+    -e "s|__TIMEZONE__|${HOST_TZ}|" \
     cloud-init/user-data.tmpl > "$SEED_DIR/user-data"
 sed -e "s|__INSTANCE_ID__|${vm_name}|" \
     -e "s|__HOSTNAME__|${vm_name}|" \
